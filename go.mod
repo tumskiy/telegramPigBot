@@ -1,4 +1,4 @@
-module piggifbot
+module telegrampigbot
 
 go 1.19
 
