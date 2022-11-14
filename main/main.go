@@ -1,12 +1,14 @@
 package main
 
 import (
+	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 	"math/rand"
+	"os"
 )
 
-const TOKEN = "5748604300:AAGluxwv-mlwv9Vcw88jPokzs_QIa1VnXYQ" //Всегда будет таким
+const TOKEN = "5748604300:AAGluxwv-mlwv9Vcw88jPokzs_QIa1VnXYQ"
 const (
 	PIG = `
 	⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣿⣿⣿⣿⠋⠀⠀
@@ -20,7 +22,6 @@ const (
 	⣷⠁⢐⠀⠈⣿⣿⣿⣿⣿⣿⣿⣿🫧⣿⣿⣿⣿⣿⣿
 	⣿⣶⣶⣦⠀⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿`
 )
-
 
 func main() {
 	// #НАЧАЛО СТАНДАРТНОЙ БИБЛИОТЕКИ
@@ -57,4 +58,27 @@ func main() {
 			}
 		}
 	}
+}
+
+// Функция отпрвки гифки
+func randomGifs(chatId int64) tgbotapi.DocumentConfig {
+	//Массив с именами гифок из файла
+	var gifs = []string{"1.gif", "2.gif", "3.gif"}
+	//Рандомим по длине массива, индекс становится = имени гифки
+	random := rand.Intn(len(gifs))
+	//Форматтируем из  массива в стрингу-путь
+	format := fmt.Sprintf("./gifs/%s", gifs[random])
+
+	//Открываем файл по пути и возвращаем
+	reader, _ := os.Open(format)
+	file := tgbotapi.FileReader{
+		Name:   format,
+		Reader: reader,
+	}
+	return tgbotapi.NewDocument(chatId, file)
+}
+
+// Функция отправки стринговой свиньи
+func pigText(chatId int64) tgbotapi.MessageConfig {
+	return tgbotapi.NewMessage(chatId, PIG)
 }
