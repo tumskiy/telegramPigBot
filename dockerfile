@@ -1,9 +1,9 @@
 FROM golang:1.19-buster AS builder
 
-COPY ./gifs /telegramPigBot/gifs
 COPY ./main /telegramPigBot/main
 COPY ./go.mod /telegramPigBot/go.mod
 COPY ./go.sum /telegramPigBot/go.sum
+COPY ./gifs /telegramPigBot/gifs
 
 WORKDIR /telegramPigBot
 
