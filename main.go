@@ -25,15 +25,20 @@ func main() {
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 			// #КОНЕЦ СТАНДАРТНОЙ БИБЛИОТЕКИ
 
-			// 25% на появление гифки или текста
 			random := rand.Intn(100)
 			if random < 90 {
 				// Отправляем гиф
-				bot.Send(randomGifs(update.Message.Chat.ID))
+				_, err = bot.Send(randomGifs(update.Message.Chat.ID))
+				if err != nil {
+					return
+				}
 				continue
 			}
 			// Отправляем текст
-			bot.Send(pigText(update.Message.Chat.ID))
+			_, err = bot.Send(pigText(update.Message.Chat.ID))
+			if err != nil {
+				return
+			}
 		}
 	}
 }
