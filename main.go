@@ -27,7 +27,7 @@ func main() {
 
 			// 25% на появление гифки или текста
 			random := rand.Intn(100)
-			if random < 75 {
+			if random < 90 {
 				// Отправляем гиф
 				bot.Send(randomGifs(update.Message.Chat.ID))
 				continue
