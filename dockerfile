@@ -10,7 +10,7 @@ WORKDIR /telegramPigBot
 RUN GOOS=linux \
     go build -ldflags="-s -w" -installsuffix "static" -o ./build/bin/telegramPigBot ./main/main.go
 
-FROM debian:buster
+FROM ubunt:buster
 
 WORKDIR /root/
 
