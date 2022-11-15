@@ -4,7 +4,10 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 	"math/rand"
+	"piggifbot/hru"
 )
+
+const TOKEN = "5748604300:AAGluxwv-mlwv9Vcw88jPokzs_QIa1VnXYQ"
 
 func main() {
 	// #НАЧАЛО СТАНДАРТНОЙ БИБЛИОТЕКИ
@@ -28,14 +31,14 @@ func main() {
 			random := rand.Intn(1000)
 			if random < 900 {
 				// Отправляем гиф
-				_, err = bot.Send(randomGifs(update.Message.Chat.ID))
+				_, err = bot.Send(hru.RandomGifs(update.Message.Chat.ID))
 				if err != nil {
 					return
 				}
 				continue
 			}
 			// Отправляем текст
-			_, err = bot.Send(pigText(update.Message.Chat.ID))
+			_, err = bot.Send(hru.PigText(update.Message.Chat.ID))
 			if err != nil {
 				return
 			}
