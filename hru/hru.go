@@ -42,5 +42,5 @@ func RandomGifs(chatId int64) tgbotapi.DocumentConfig {
 
 // PigText Функция отправки стринговой свиньи
 func PigText(chatId int64) tgbotapi.MessageConfig {
-	return tgbotapi.NewMessage(chatId, PIG)
+	return tgbotapi.NewMessage(chatId, "ТЕБЕ ПОВЕЗЛО!!!! ВОТ ТЕБЕ РЕДКИЙ ХРЯК"+PIG)
 }

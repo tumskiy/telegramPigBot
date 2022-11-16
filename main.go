@@ -28,20 +28,29 @@ func main() {
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 			// #КОНЕЦ СТАНДАРТНОЙ БИБЛИОТЕКИ
 
-			random := rand.Intn(1000)
-			if random < 900 {
-				// Отправляем гиф
-				_, err = bot.Send(hru.RandomGifs(update.Message.Chat.ID))
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
+			switch update.Message.Command() {
+			case "hru":
+				random := rand.Intn(1000)
+				if random < 900 {
+					// Отправляем гиф
+					_, err = bot.Send(hru.RandomGifs(update.Message.Chat.ID))
+					if err != nil {
+						return
+					}
+					continue
+				}
+				// Отправляем текст
+				_, err = bot.Send(hru.PigText(update.Message.Chat.ID))
 				if err != nil {
 					return
 				}
-				continue
+			case "htoya":
+				tgbotapi.NewMessage(update.Message.Chat.ID, "Давай посмотрим, кто ты сейчас: `В разработке`")
+			default:
+				msg.Text = "Введи другую команду, я не знаю эту"
 			}
-			// Отправляем текст
-			_, err = bot.Send(hru.PigText(update.Message.Chat.ID))
-			if err != nil {
-				return
-			}
+
 		}
 	}
 }
