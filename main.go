@@ -27,28 +27,29 @@ func main() {
 		if update.Message != nil {
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 			// #КОНЕЦ СТАНДАРТНОЙ БИБЛИОТЕКИ
+			if update.Message.Command() == "hru" {
 
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
-			switch update.Message.Command() {
-			case "hru":
 				random := rand.Intn(1000)
 				if random < 900 {
 					// Отправляем гиф
-					_, err = bot.Send(command.RandomGifs(update.Message.Chat.ID))
+					_, err := bot.Send(command.RandomGifs(update.Message.Chat.ID))
 					if err != nil {
 						return
 					}
 					continue
 				}
 				// Отправляем текст
-				_, err = bot.Send(command.PigText(update.Message.Chat.ID))
+				_, err := bot.Send(command.PigText(update.Message.Chat.ID))
 				if err != nil {
 					return
 				}
-			case "htoya":
-				tgbotapi.NewMessage(update.Message.Chat.ID, "Давай посмотрим, кто ты сейчас: `В разработке`")
-			default:
-				msg.Text = "Введи другую команду, я не знаю эту"
+			}
+
+			if update.Message.Command() == "htoya" {
+				_, err := bot.Send(command.RandomName(update.Message.Chat.ID))
+				if err != nil {
+					return
+				}
 			}
 
 		}
