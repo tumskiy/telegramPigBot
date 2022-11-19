@@ -3,21 +3,109 @@ package command
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"math/rand"
+	"os"
 )
 
-func RandomName(chatId int64) tgbotapi.MessageConfig {
-	random := rand.Intn(5)
-	if random == 1 {
-		return tgbotapi.NewMessage(chatId, "1")
+type FileConfig struct {
+	name string
+	msg  string
+}
+
+func HtoyaGifs(chatId int64) tgbotapi.DocumentConfig {
+	workDir := "./command/htoya/"
+	var massGifsCaptions = []FileConfig{
+		{
+			name: "agent.gif",
+			msg:  "Ты агент 69",
+		},
+		{
+			name: "billy.gif",
+			msg:  "Ты Билли",
+		},
+		{
+			name: "clown.gif",
+			msg:  "Ты клоун",
+		},
+		{
+			name: "don.gif",
+			msg:  "Ты Дон",
+		},
+		{
+			name: "gigachad.gif",
+			msg:  "Ты Гигачед",
+		},
+		{
+			name: "it.gif",
+			msg:  "Ты ойтешнек",
+		},
+		{
+			name: "obeme.gif",
+			msg:  "Ты Абэме",
+		},
+		{
+			name: "ohmy.gif",
+			msg:  "Ты ценитель",
+		},
+		{
+			name: "petro.gif",
+			msg:  "Ты призрак Киева",
+		},
+		{
+			name: "rat.gif",
+			msg:  "Ля ты крыса конешн",
+		},
+		{
+			name: "ryglo.gif",
+			msg:  "Ты рыгло",
+		},
+		{
+			name: "serb.gif",
+			msg:  "Ты взял Жепу",
+		},
+		{
+			name: "skyrim.gif",
+			msg:  "Ты пробудившийся",
+		},
+		{
+			name: "sunboy.gif",
+			msg:  "Ты Санбой",
+		},
+		{
+			name: "zmyh.gif",
+			msg:  "Ты Жмых",
+		},
 	}
-	if random == 2 {
-		return tgbotapi.NewMessage(chatId, "2")
+	//делаем массив строк равным длине массива объектов
+	var namesArray = make([]string, len(massGifsCaptions))
+	//Заполняем новый массив именем гифки
+	for index, value := range massGifsCaptions {
+		namesArray[index] = value.name
 	}
-	if random == 3 {
-		return tgbotapi.NewMessage(chatId, "3")
+	// Создаем файл
+	name := RandomName(namesArray)
+	reader, _ := os.Open(workDir + name)
+	file := tgbotapi.FileReader{
+		Name:   name,
+		Reader: reader,
 	}
-	if random == 4 {
-		return tgbotapi.NewMessage(chatId, "4")
+	//Ищем описание по имени файла
+	var captions string
+	for _, massGifCaption := range massGifsCaptions {
+
+		if name == massGifCaption.name {
+			captions = massGifCaption.msg
+			break
+		}
 	}
-	return tgbotapi.NewMessage(chatId, "5")
+	//Выводим описание
+	fileConfig := tgbotapi.NewDocument(chatId, file)
+	fileConfig.Caption = captions
+	return fileConfig
+}
+
+// RandomName Рандомайзер массива
+func RandomName(str []string) string {
+	random := rand.Intn(len(str))
+	name := str[random]
+	return name
 }

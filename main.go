@@ -24,32 +24,30 @@ func main() {
 
 	updates := bot.GetUpdatesChan(u)
 	for update := range updates {
+		chatId := update.Message.Chat.ID
 		if update.Message != nil {
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 			// #КОНЕЦ СТАНДАРТНОЙ БИБЛИОТЕКИ
 			if update.Message.Command() == "hru" {
 
 				random := rand.Intn(1000)
-				if random < 900 {
+				if random > 100 {
 					// Отправляем гиф
-					_, err := bot.Send(command.RandomGifs(update.Message.Chat.ID))
+					_, err := bot.Send(command.RandomGifs(chatId))
 					if err != nil {
 						return
 					}
 					continue
 				}
 				// Отправляем текст
-				_, err := bot.Send(command.PigText(update.Message.Chat.ID))
+				_, err := bot.Send(command.PigText(chatId))
 				if err != nil {
 					return
 				}
 			}
 
 			if update.Message.Command() == "htoya" {
-				_, err := bot.Send(command.RandomName(update.Message.Chat.ID))
-				if err != nil {
-					return
-				}
+				bot.Send(command.HtoyaGifs(chatId))
 			}
 
 		}
