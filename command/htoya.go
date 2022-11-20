@@ -109,3 +109,14 @@ func RandomName(str []string) string {
 	name := str[random]
 	return name
 }
+
+func SendZoltan(chatId int64) tgbotapi.DocumentConfig {
+	reader, _ := os.Open("./command/htoya/zoltan.gif")
+	file := tgbotapi.FileReader{
+		Name:   "zoltan.gif",
+		Reader: reader,
+	}
+	fileConfig := tgbotapi.NewDocument(chatId, file)
+	fileConfig.Caption = "Ты словил легендарОЧКУ, ты Золтан!!!"
+	return fileConfig
+}

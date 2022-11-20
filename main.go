@@ -47,9 +47,20 @@ func main() {
 			}
 
 			if update.Message.Command() == "htoya" {
-				bot.Send(command.HtoyaGifs(chatId))
-			}
+				random := rand.Intn(1000)
+				if random > 10 {
+					_, err := bot.Send(command.HtoyaGifs(chatId))
+					if err != nil {
+						return
+					}
+					continue
+				}
+				_, err := bot.Send(command.SendZoltan(chatId))
+				if err != nil {
+					return
+				}
 
+			}
 		}
 	}
 }
