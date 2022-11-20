@@ -40,7 +40,7 @@ func HtoyaGifs(chatId int64) tgbotapi.DocumentConfig {
 		},
 		{
 			name: "obeme.gif",
-			msg:  "Ты Абэме",
+			msg:  "Ты черножопый",
 		},
 		{
 			name: "ohmy.gif",
@@ -77,6 +77,50 @@ func HtoyaGifs(chatId int64) tgbotapi.DocumentConfig {
 		{
 			name: "nikita.gif",
 			msg:  "Ты некрасный борщ с капусткой",
+		},
+		{
+			name: "dolboeb.gif",
+			msg:  "Ты сказочный долбоёб",
+		},
+		{
+			name: "gey.gif",
+			msg:  "Ты гей",
+		},
+		{
+			name: "gey.gif",
+			msg:  "Ты гей",
+		},
+		{
+			name: "girkin.gif",
+			msg:  "Ты предрекал мобилизацию",
+		},
+		{
+			name: "harold.gif",
+			msg:  "Ты скрываешь боль",
+		},
+		{
+			name: "kapibara.gif",
+			msg:  "Ты капибаржа",
+		},
+		{
+			name: "pohuist.gif",
+			msg:  "Ты похуист",
+		},
+		{
+			name: "shok.gif",
+			msg:  "Ты в шоке",
+		},
+		{
+			name: "sina.gif",
+			msg:  "Ты Сина (Джон)",
+		},
+		{
+			name: "sanders.gif",
+			msg:  "Ты полковник Сандерс",
+		},
+		{
+			name: "vasya.gif",
+			msg:  "Ты Васян",
 		},
 	}
 	//делаем массив строк равным длине массива объектов
