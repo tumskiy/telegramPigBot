@@ -74,6 +74,10 @@ func HtoyaGifs(chatId int64) tgbotapi.DocumentConfig {
 			name: "zmyh.gif",
 			msg:  "Ты Жмых",
 		},
+		{
+			name: "nikita.gif",
+			msg:  "Ты некрасный борщ с капусткой",
+		},
 	}
 	//делаем массив строк равным длине массива объектов
 	var namesArray = make([]string, len(massGifsCaptions))
