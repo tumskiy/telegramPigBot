@@ -1,4 +1,4 @@
 # telegramPigBot
 
-Мой первый бот на GO
-да и вообще первые пробы в программирование на GO
+My first bot for telegram on GOLANG
+It's m first project on GO
