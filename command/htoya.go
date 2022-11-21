@@ -11,7 +11,7 @@ type FileConfig struct {
 	msg  string
 }
 
-func HtoyaGifs(chatId int64) tgbotapi.DocumentConfig {
+func HtoyaGifs(chatId int64, replay int) tgbotapi.DocumentConfig {
 	workDir := "./command/htoya/"
 	var massGifsCaptions = []FileConfig{
 		{
@@ -73,10 +73,6 @@ func HtoyaGifs(chatId int64) tgbotapi.DocumentConfig {
 		{
 			name: "zmyh.gif",
 			msg:  "Ты Жмых",
-		},
-		{
-			name: "nikita.gif",
-			msg:  "Ты некрасный борщ с капусткой",
 		},
 		{
 			name: "dolboeb.gif",
@@ -148,6 +144,7 @@ func HtoyaGifs(chatId int64) tgbotapi.DocumentConfig {
 	//Выводим описание
 	fileConfig := tgbotapi.NewDocument(chatId, file)
 	fileConfig.Caption = captions
+	fileConfig.ReplyToMessageID = replay
 	return fileConfig
 }
 
@@ -158,7 +155,7 @@ func RandomName(str []string) string {
 	return name
 }
 
-func SendZoltan(chatId int64) tgbotapi.DocumentConfig {
+func SendZoltan(chatId int64, replay int) tgbotapi.DocumentConfig {
 	reader, _ := os.Open("./command/htoya/zoltan.gif")
 	file := tgbotapi.FileReader{
 		Name:   "zoltan.gif",
@@ -166,5 +163,6 @@ func SendZoltan(chatId int64) tgbotapi.DocumentConfig {
 	}
 	fileConfig := tgbotapi.NewDocument(chatId, file)
 	fileConfig.Caption = "Ты словил легендарОЧКУ, ты Золтан!!!"
+	fileConfig.ReplyToMessageID = replay
 	return fileConfig
 }

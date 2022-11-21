@@ -7,6 +7,8 @@ import (
 	"piggifbot/command"
 )
 
+const TOKEN = "5748604300:AAGluxwv-mlwv9Vcw88jPokzs_QIa1VnXYQ"
+
 func main() {
 	// #НАЧАЛО СТАНДАРТНОЙ БИБЛИОТЕКИ
 	bot, err := tgbotapi.NewBotAPI(TOKEN)
@@ -23,22 +25,25 @@ func main() {
 	updates := bot.GetUpdatesChan(u)
 	for update := range updates {
 		chatId := update.Message.Chat.ID
+		msgText := update.Message.Text
+		msgId := update.Message.MessageID
 		if update.Message != nil {
-			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
+			log.Printf("[%s] %s", update.Message.From.UserName, msgText+"Allright")
 			// #КОНЕЦ СТАНДАРТНОЙ БИБЛИОТЕКИ
 			if update.Message.Command() == "hru" {
-
 				random := rand.Intn(1000)
 				if random > 100 {
 					// Отправляем гиф
-					_, err := bot.Send(command.RandomGifs(chatId))
+					msg := tgbotapi.NewMessage(chatId, msgText)
+					msg.ReplyToMessageID = msgId
+					_, err := bot.Send(command.RandomGifs(chatId, msgId))
 					if err != nil {
 						return
 					}
 					continue
 				}
 				// Отправляем текст
-				_, err := bot.Send(command.PigText(chatId))
+				_, err := bot.Send(command.PigText(chatId, msgId))
 				if err != nil {
 					return
 				}
@@ -47,13 +52,13 @@ func main() {
 			if update.Message.Command() == "htoya" {
 				random := rand.Intn(1000)
 				if random > 10 {
-					_, err := bot.Send(command.HtoyaGifs(chatId))
+					_, err := bot.Send(command.HtoyaGifs(chatId, msgId))
 					if err != nil {
 						return
 					}
 					continue
 				}
-				_, err := bot.Send(command.SendZoltan(chatId))
+				_, err := bot.Send(command.SendZoltan(chatId, msgId))
 				if err != nil {
 					return
 				}

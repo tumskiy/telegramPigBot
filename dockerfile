@@ -1,16 +1,16 @@
 FROM golang:1.19-buster AS builder
 
-COPY hru /telegramPigBot/hru
-COPY ./main.go /telegramPigBot/main.go
-COPY ./go.mod /telegramPigBot/go.mod
-COPY ./go.sum /telegramPigBot/go.sum
+COPY ./command /telegramPigBot/command
+COPY ./main    /telegramPigBot/main
+COPY ./go.mod  /telegramPigBot/go.mod
+COPY ./go.sum  /telegramPigBot/go.sum
 
 WORKDIR /telegramPigBot
 
 RUN GOOS=linux \
     go build -ldflags="-s -w" -installsuffix "static" -o ./build/bin/telegramPigBot ./main/main.go
 
-FROM ubuntu:buster
+FROM ubuntu:latest
 
 WORKDIR /root/
 

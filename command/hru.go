@@ -22,7 +22,7 @@ const (
 )
 
 // RandomGifs Функция отпрвки гифки
-func RandomGifs(chatId int64) tgbotapi.DocumentConfig {
+func RandomGifs(chatId int64, replay int) tgbotapi.DocumentConfig {
 	//Массив с именами гифок из файла
 	var gifs = []string{"1.gif", "2.gif", "3.gif", "4.gif", "5.gif", "6.gif", "7.gif"}
 	//Рандомим по длине массива, индекс становится = имени гифки
@@ -37,10 +37,14 @@ func RandomGifs(chatId int64) tgbotapi.DocumentConfig {
 		Name:   formatName,
 		Reader: reader,
 	}
-	return tgbotapi.NewDocument(chatId, file)
+	fileConfig := tgbotapi.NewDocument(chatId, file)
+	fileConfig.ReplyToMessageID = replay
+	return fileConfig
 }
 
 // PigText Функция отправки стринговой свиньи
-func PigText(chatId int64) tgbotapi.MessageConfig {
-	return tgbotapi.NewMessage(chatId, "ТЕБЕ ПОВЕЗЛО!!!! ВОТ ТЕБЕ РЕДКИЙ ХРЯК\n"+PIG)
+func PigText(chatId int64, replay int) tgbotapi.MessageConfig {
+	fileConfig := tgbotapi.NewMessage(chatId, "ТЕБЕ ПОВЕЗЛО!!!! ВОТ ТЕБЕ РЕДКИЙ ХРЯК\n"+PIG)
+	fileConfig.ReplyToMessageID = replay
+	return fileConfig
 }
