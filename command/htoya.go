@@ -4,6 +4,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"math/rand"
 	"os"
+	"time"
 )
 
 type FileConfig struct {
@@ -150,6 +151,7 @@ func HtoyaGifs(chatId int64, replay int) tgbotapi.DocumentConfig {
 
 // RandomName Рандомайзер массива
 func RandomName(str []string) string {
+	rand.Seed(time.Now().UnixNano())
 	random := rand.Intn(len(str))
 	name := str[random]
 	return name
