@@ -24,8 +24,8 @@ const (
 
 // RandomGifs Функция отпрвки гифки
 func RandomGifs(chatId int64, replay int) tgbotapi.DocumentConfig {
-	//зерно для рандома по юних таймштампу
-	rand.Seed(time.Now().UnixNano())
+	//зерно для рандома по юникс таймштампу
+	rand.Seed(time.Now().Unix())
 	//Массив с именами гифок из файла
 	var gifs = []string{"1.gif", "2.gif", "3.gif", "4.gif", "5.gif", "6.gif", "7.gif"}
 	//Рандомим по длине массива, индекс становится = имени гифки

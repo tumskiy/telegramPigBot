@@ -1,7 +1,7 @@
 FROM golang:1.19-buster AS builder
 
 COPY ./command /telegramPigBot/command
-COPY ./main    /telegramPigBot/main
+COPY ./main    /telegramPigBot/main.go
 COPY ./go.mod  /telegramPigBot/go.mod
 COPY ./go.sum  /telegramPigBot/go.sum
 
