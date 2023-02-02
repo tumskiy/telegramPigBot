@@ -1,13 +1,14 @@
 package main
 
 import (
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 	"math/rand"
 	"piggifbot/command"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-const TOKEN = "5748604300:AAGluxwv-mlwv9Vcw88jPokzs_QIa1VnXYQ"
+const TOKEN = "5874145224:AAGpGHS-_4LcyaQikUUi02UZ-_lQfIqSu2s"
 
 func main() {
 	// #НАЧАЛО СТАНДАРТНОЙ БИБЛИОТЕКИ
@@ -24,26 +25,22 @@ func main() {
 
 	updates := bot.GetUpdatesChan(u)
 	for update := range updates {
-		chatId := update.Message.Chat.ID
-		msgText := update.Message.Text
-		msgId := update.Message.MessageID
 		if update.Message != nil {
-			log.Printf("[%s] %s", update.Message.From.UserName, msgText+"Allright")
 			// #КОНЕЦ СТАНДАРТНОЙ БИБЛИОТЕКИ
 			if update.Message.Command() == "hru" {
 				random := rand.Intn(1000)
 				if random > 100 {
 					// Отправляем гиф
-					msg := tgbotapi.NewMessage(chatId, msgText)
-					msg.ReplyToMessageID = msgId
-					_, err := bot.Send(command.RandomGifs(chatId, msgId))
+					msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+					msg.ReplyToMessageID = update.Message.MessageID
+					_, err := bot.Send(command.RandomGifs(update.Message.Chat.ID, update.Message.MessageID))
 					if err != nil {
 						return
 					}
 					continue
 				}
 				// Отправляем текст
-				_, err := bot.Send(command.PigText(chatId, msgId))
+				_, err := bot.Send(command.PigText(update.Message.Chat.ID, update.Message.MessageID))
 				if err != nil {
 					return
 				}
@@ -52,13 +49,13 @@ func main() {
 			if update.Message.Command() == "htoya" {
 				random := rand.Intn(1000)
 				if random > 10 {
-					_, err := bot.Send(command.HtoyaGifs(chatId, msgId))
+					_, err := bot.Send(command.HtoyaGifs(update.Message.Chat.ID, update.Message.MessageID))
 					if err != nil {
 						return
 					}
 					continue
 				}
-				_, err := bot.Send(command.SendZoltan(chatId, msgId))
+				_, err := bot.Send(command.SendZoltan(update.Message.Chat.ID, update.Message.MessageID))
 				if err != nil {
 					return
 				}
