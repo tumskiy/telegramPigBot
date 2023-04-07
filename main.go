@@ -39,11 +39,6 @@ func main() {
 					}
 					continue
 				}
-				// Отправляем текст
-				_, err := bot.Send(command.PigText(update.Message.Chat.ID, update.Message.MessageID))
-				if err != nil {
-					return
-				}
 			}
 
 			if update.Message.Command() == "htoya" {
@@ -64,3 +59,5 @@ func main() {
 		}
 	}
 }
+
+//привет
