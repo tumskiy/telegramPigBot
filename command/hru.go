@@ -2,10 +2,10 @@ package command
 
 import (
 	"fmt"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"math/rand"
 	"os"
-	"time"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 const (
@@ -24,17 +24,18 @@ const (
 
 // RandomGifs Функция отпрвки гифки
 func RandomGifs(chatId int64, replay int) tgbotapi.DocumentConfig {
-	//зерно для рандома по юникс таймштампу
-	rand.Seed(time.Now().Unix())
-	//Массив с именами гифок из файла
-	var gifs = []string{"1.gif", "2.gif", "3.gif", "4.gif", "5.gif", "6.gif", "7.gif"}
-	//Рандомим по длине массива, индекс становится = имени гифки
-	random := rand.Intn(len(gifs))
-	//Форматтируем из  массива в стрингу-путь
-	format := fmt.Sprintf("./command/hru/%s", gifs[random])
-	formatName := fmt.Sprintf("%s", gifs[random])
 
-	//Открываем файл по пути и возвращаем
+	var gifs = []string{"1.gif", "2.gif", "3.gif", "4.gif", "5.gif", "6.gif", "7.gif"}
+
+	gifCache := make(map[int]string)
+	for i, gif := range gifs {
+		gifCache[i] = fmt.Sprintf("./command/hru/%s", gif)
+	}
+
+	random := rand.Intn(len(gifs))
+	format := gifCache[random]
+	formatName := gifs[random]
+
 	reader, _ := os.Open(format)
 	file := tgbotapi.FileReader{
 		Name:   formatName,

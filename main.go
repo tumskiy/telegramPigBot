@@ -1,18 +1,20 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"math/rand"
 	"piggifbot/command"
+	"piggifbot/command/htopd"
+	"piggifbot/env"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-const TOKEN = "5874145224:AAGpGHS-_4LcyaQikUUi02UZ-_lQfIqSu2s"
-
 func main() {
+	parseEnv := env.ParseEnv("TOKEN")
 	// #НАЧАЛО СТАНДАРТНОЙ БИБЛИОТЕКИ
-	bot, err := tgbotapi.NewBotAPI(TOKEN)
+	bot, err := tgbotapi.NewBotAPI(parseEnv)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -53,6 +55,42 @@ func main() {
 				_, err := bot.Send(command.SendZoltan(update.Message.Chat.ID, update.Message.MessageID))
 				if err != nil {
 					return
+				}
+
+			}
+
+			if update.Message.Command() == "htopidoreg" {
+				u := &htopd.User{
+					Name: update.Message.From.UserName,
+					ID:   update.Message.From.ID,
+				}
+				_, err := bot.Send(u.UserReg(u.ID, update.Message.Chat.ID, update.Message.MessageID))
+				if err != nil {
+					fmt.Println("Error:[%s]", err)
+				}
+
+			}
+
+			if update.Message.Command() == "htopidor" {
+				pd := &htopd.PD{
+					UserID: update.Message.From.ID,
+					ChatID: update.Message.Chat.ID,
+				}
+				_, err := bot.Send(pd.SendTodayPD(pd.UserID, pd.ChatID, update.Message.MessageID))
+				if err != nil {
+					fmt.Println("Error:[%s]", err)
+				}
+
+			}
+
+			if update.Message.Command() == "skokapidorov" {
+				pd := &htopd.PD{
+					UserID: update.Message.From.ID,
+					ChatID: update.Message.Chat.ID,
+				}
+				_, err := bot.Send(pd.SendGetCountAllPD(pd.ChatID, update.Message.MessageID))
+				if err != nil {
+					fmt.Println("Error:[%s]", err)
 				}
 
 			}
