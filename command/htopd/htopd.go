@@ -2,6 +2,7 @@ package htopd
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 
@@ -31,6 +32,11 @@ type PD struct {
 	UserID int64
 	ChatID int64
 	Date   time.Time
+}
+
+type UserCount struct {
+	Name  string
+	Count int
 }
 
 func (pd *PD) SendTodayPD(userID, chatID int64, replay int) tgbotapi.MessageConfig {
@@ -66,7 +72,7 @@ func (pd *PD) SendGetCountAllPD(chatID int64, reply int) tgbotapi.MessageConfig 
 		return send
 	}
 
-	var preMsg []string
+	userCounts := make(map[string]int)
 
 	for _, user := range users {
 		userID := user.ID
@@ -76,7 +82,25 @@ func (pd *PD) SendGetCountAllPD(chatID int64, reply int) tgbotapi.MessageConfig 
 			return send
 		}
 
-		msg := fmt.Sprintf("%s - %d раз\n", user.Name, count)
+		userCounts[user.Name] = count
+	}
+
+	// Преобразование map в slice для сортировки
+	type kv struct {
+		Key   string
+		Value int
+	}
+	var sortedUserCounts []kv
+	for k, v := range userCounts {
+		sortedUserCounts = append(sortedUserCounts, kv{k, v})
+	}
+	sort.Slice(sortedUserCounts, func(i, j int) bool {
+		return sortedUserCounts[i].Value > sortedUserCounts[j].Value
+	})
+
+	var preMsg []string
+	for _, userCount := range sortedUserCounts {
+		msg := fmt.Sprintf("%s - %d раз\n", userCount.Key, userCount.Value)
 		preMsg = append(preMsg, msg)
 	}
 
