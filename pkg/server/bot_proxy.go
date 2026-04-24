@@ -16,8 +16,6 @@ var (
 	proxyAddr = env.ParseEnv("PROXY_ADDR")
 	proxyUser = env.ParseEnv("PROXY_USER")
 	proxyPass = env.ParseEnv("PROXY_PASS")
-
-	httpClientBot HttpClientBot
 )
 
 type HttpClientBot struct {

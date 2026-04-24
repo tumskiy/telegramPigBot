@@ -1,3 +1,4 @@
+// server.go
 package server
 
 import (
@@ -10,16 +11,16 @@ import (
 var token = env.ParseEnv("TOKEN")
 
 type Server struct {
-	botApi     *tgbotapi.BotAPI
-	httpClient *HttpClientBot
+	BotApi     *tgbotapi.BotAPI
+	HttpClient *HttpClientBot
 }
 
 func NewServer() *Server {
-	httpClient := NewHTTPClient()
+	httpClient := GetHTTPClient()
 	bot, err := tgbotapi.NewBotAPIWithClient(
 		token,
 		tgbotapi.APIEndpoint,
-		GetHTTPClient().Client,
+		httpClient.Client,
 	)
 	if err != nil {
 		logrus.Panicf("Failed to init Telegram Bot: %v", err)
@@ -30,7 +31,7 @@ func NewServer() *Server {
 	logrus.Info(GetProxyInfo())
 
 	return &Server{
-		botApi:     bot,
-		httpClient: httpClient,
+		BotApi:     bot,
+		HttpClient: httpClient,
 	}
 }

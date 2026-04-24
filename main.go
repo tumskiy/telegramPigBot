@@ -1,101 +1,141 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"math/rand"
+	"os"
+	"os/signal"
 	"piggifbot/command"
 	"piggifbot/command/htopd"
-	"piggifbot/env"
+	"piggifbot/pkg/gifcache"
+	"piggifbot/pkg/server"
+	"syscall"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
-	parseEnv := env.ParseEnv("TOKEN")
-	// #НАЧАЛО СТАНДАРТНОЙ БИБЛИОТЕКИ
-	bot, err := tgbotapi.NewBotAPI(parseEnv)
-	if err != nil {
-		log.Panic(err)
+	logrus.SetFormatter(&logrus.TextFormatter{
+		FullTimestamp:   true,
+		TimestampFormat: "2006-01-02 15:04:05",
+	})
+
+	srv := server.NewServer()
+	bot := srv.BotApi
+
+	gifCache := gifcache.NewCache(bot, "./.gifcache")
+
+	if err := gifCache.PreloadCache(); err != nil {
+		logrus.Errorf("Failed to preload: %v", err)
 	}
 
-	bot.Debug = true
-	log.Printf("Authorized on account %s", bot.Self.UserName)
+	if err := gifCache.LoadAllGifs("./command/hru", "hru"); err != nil {
+		logrus.Warnf("Failed to load hru gifs: %v", err)
+	}
+
+	if err := gifCache.LoadAllGifs("./command/htoya", "htoya"); err != nil {
+		logrus.Warnf("Failed to load htoya gifs: %v", err)
+	}
 
 	u := tgbotapi.NewUpdate(0)
-	u.Timeout = 60
+	u.Timeout = 120
 
 	updates := bot.GetUpdatesChan(u)
-	for update := range updates {
-		if update.Message != nil {
-			// #КОНЕЦ СТАНДАРТНОЙ БИБЛИОТЕКИ
-			if update.Message.Command() == "hru" {
+
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		for update := range updates {
+			if update.Message == nil {
+				continue
+			}
+
+			switch update.Message.Command() {
+			case "hru":
 				random := rand.Intn(1000)
 				if random > 100 {
-					// Отправляем гиф
 					msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
 					msg.ReplyToMessageID = update.Message.MessageID
-					_, err := bot.Send(command.RandomGifs(update.Message.Chat.ID, update.Message.MessageID))
+
+					gif, err := gifCache.GetRandomGif("hru")
 					if err != nil {
-						return
+						logrus.Errorf("Failed to get gif from cache: %v", err)
+						bot.Send(command.PigText(update.Message.Chat.ID, update.Message.MessageID))
+						continue
+					}
+
+					animationMsg := tgbotapi.NewAnimation(update.Message.Chat.ID, tgbotapi.FileID(gif.TgFileID))
+					animationMsg.ReplyToMessageID = update.Message.MessageID
+					_, err = bot.Send(animationMsg)
+					if err != nil {
+						logrus.Errorf("Failed to send animation: %v", err)
 					}
 					continue
 				}
-			}
 
-			if update.Message.Command() == "htoya" {
+			case "htoya":
 				random := rand.Intn(1000)
 				if random > 10 {
-					_, err := bot.Send(command.HtoyaGifs(update.Message.Chat.ID, update.Message.MessageID))
+					gif, err := gifCache.GetRandomGif("htoya")
 					if err != nil {
-						return
+						logrus.Errorf("Failed to get gif from cache: %v", err)
+						continue
+					}
+
+					animationMsg := tgbotapi.NewAnimation(update.Message.Chat.ID, tgbotapi.FileID(gif.TgFileID))
+					animationMsg.ReplyToMessageID = update.Message.MessageID
+					_, err = bot.Send(animationMsg)
+					if err != nil {
+						logrus.Errorf("Failed to send animation: %v", err)
 					}
 					continue
 				}
-				_, err := bot.Send(command.SendZoltan(update.Message.Chat.ID, update.Message.MessageID))
-				if err != nil {
-					return
+
+				zoltanGif, err := gifCache.GetGifByName("zoltan.gif")
+				if err == nil {
+					animationMsg := tgbotapi.NewAnimation(update.Message.Chat.ID, tgbotapi.FileID(zoltanGif.TgFileID))
+					animationMsg.ReplyToMessageID = update.Message.MessageID
+					animationMsg.Caption = "Ты словил легендарОЧКУ, ты Золтан!!!"
+					_, err = bot.Send(animationMsg)
+					if err != nil {
+						logrus.Errorf("Failed to send zoltan: %v", err)
+					}
 				}
 
-			}
-
-			if update.Message.Command() == "htopidoreg" {
+			case "htopidoreg":
 				u := &htopd.User{
 					Name: update.Message.From.UserName,
 					ID:   update.Message.From.ID,
 				}
 				_, err := bot.Send(u.UserReg(u.ID, update.Message.Chat.ID, update.Message.MessageID))
 				if err != nil {
-					fmt.Println("Error:[%s]", err)
+					logrus.Errorf("Error: %v", err)
 				}
 
-			}
-
-			if update.Message.Command() == "htopidor" {
+			case "htopidor":
 				pd := &htopd.PD{
 					UserID: update.Message.From.ID,
 					ChatID: update.Message.Chat.ID,
 				}
 				_, err := bot.Send(pd.SendTodayPD(pd.UserID, pd.ChatID, update.Message.MessageID))
 				if err != nil {
-					fmt.Println("Error:[%s]", err)
+					logrus.Errorf("Error: %v", err)
 				}
 
-			}
-
-			if update.Message.Command() == "skokapidorov" {
+			case "skokapidorov":
 				pd := &htopd.PD{
 					UserID: update.Message.From.ID,
 					ChatID: update.Message.Chat.ID,
 				}
 				_, err := bot.Send(pd.SendGetCountAllPD(pd.ChatID, update.Message.MessageID))
 				if err != nil {
-					fmt.Println("Error:[%s]", err)
+					logrus.Errorf("Error: %v", err)
 				}
-
 			}
 		}
-	}
-}
+	}()
 
-//привет
+	<-sigChan
+	logrus.Info("Shutting down...")
+}
