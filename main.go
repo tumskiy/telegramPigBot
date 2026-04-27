@@ -14,6 +14,35 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+var htoyaCaptions = map[string]string{
+	"agent.gif":    "Ты агент 69",
+	"billy.gif":    "Ты Билли",
+	"clown.gif":    "Ты клоун",
+	"don.gif":      "Ты Дон",
+	"gigachad.gif": "Ты Гигачед",
+	"it.gif":       "Ты ойтешнек",
+	"obeme.gif":    "Ты черножопый",
+	"ohmy.gif":     "Ты ценитель",
+	"petro.gif":    "Ты призрак Киева",
+	"rat.gif":      "Ля ты крыса конешн",
+	"ryglo.gif":    "Ты рыгло",
+	"serb.gif":     "Ты взял Жепу",
+	"skyrim.gif":   "Ты пробудившийся",
+	"sunboy.gif":   "Ты Санбой",
+	"zmyh.gif":     "Ты Жмых",
+	"dolboeb.gif":  "Ты сказочный долбоёб",
+	"gey.gif":      "Ты гей",
+	"girkin.gif":   "Ты предрекал мобилизацию",
+	"harold.gif":   "Ты скрываешь боль",
+	"kapibara.gif": "Ты капибаржа",
+	"pohuist.gif":  "Ты похуист",
+	"shok.gif":     "Ты в шоке",
+	"sina.gif":     "Ты Сина (Джон)",
+	"sanders.gif":  "Ты полковник Сандерс",
+	"vasya.gif":    "Ты Васян",
+	"zoltan.gif":   "Ты словил легендарОЧКУ, ты Золтан!!!",
+}
+
 func main() {
 	logrus.SetFormatter(&logrus.TextFormatter{
 		FullTimestamp:   true,
@@ -29,11 +58,11 @@ func main() {
 		logrus.Errorf("Failed to preload: %v", err)
 	}
 
-	if err := gifCache.LoadAllGifs("./command/hru", "hru"); err != nil {
+	if err := gifCache.LoadAllGifsWithCaptions("./command/hru", "hru", nil); err != nil {
 		logrus.Warnf("Failed to load hru gifs: %v", err)
 	}
 
-	if err := gifCache.LoadAllGifs("./command/htoya", "htoya"); err != nil {
+	if err := gifCache.LoadAllGifsWithCaptions("./command/htoya", "htoya", htoyaCaptions); err != nil {
 		logrus.Warnf("Failed to load htoya gifs: %v", err)
 	}
 
@@ -85,6 +114,7 @@ func main() {
 
 					animationMsg := tgbotapi.NewAnimation(update.Message.Chat.ID, tgbotapi.FileID(gif.TgFileID))
 					animationMsg.ReplyToMessageID = update.Message.MessageID
+					animationMsg.Caption = gif.Caption 
 					_, err = bot.Send(animationMsg)
 					if err != nil {
 						logrus.Errorf("Failed to send animation: %v", err)
@@ -96,7 +126,7 @@ func main() {
 				if err == nil {
 					animationMsg := tgbotapi.NewAnimation(update.Message.Chat.ID, tgbotapi.FileID(zoltanGif.TgFileID))
 					animationMsg.ReplyToMessageID = update.Message.MessageID
-					animationMsg.Caption = "Ты словил легендарОЧКУ, ты Золтан!!!"
+					animationMsg.Caption = zoltanGif.Caption 
 					_, err = bot.Send(animationMsg)
 					if err != nil {
 						logrus.Errorf("Failed to send zoltan: %v", err)

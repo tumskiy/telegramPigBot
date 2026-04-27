@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"piggifbot/env"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -28,6 +29,7 @@ type Cache struct {
 	FileName string `json:"file_name"`
 	TgFileID string `json:"tg_file_id"`
 	Command  string `json:"command"`
+	Caption  string `json:"caption"`
 }
 
 type CacheData struct {
@@ -44,7 +46,7 @@ func NewCache(bot *tgbotapi.BotAPI, cacheDir string) *CacheGifs {
 	}
 }
 
-func (c *CacheGifs) LoadAllGifs(dirPath, commandName string) error {
+func (c *CacheGifs) LoadAllGifsWithCaptions(dirPath, commandName string, captionsMap map[string]string) error {
 	pattern := filepath.Join(dirPath, "*.gif")
 
 	files, err := filepath.Glob(pattern)
@@ -75,11 +77,19 @@ func (c *CacheGifs) LoadAllGifs(dirPath, commandName string) error {
 			continue
 		}
 
+		caption := ""
+		if captionsMap != nil {
+			if val, ok := captionsMap[fileName]; ok {
+				caption = val
+			}
+		}
+
 		c.mu.Lock()
 		c.cacheData.Gifs[fileName] = Cache{
 			FileName: fileName,
 			TgFileID: fileID,
 			Command:  commandName,
+			Caption:  caption,
 		}
 		c.mu.Unlock()
 
@@ -96,6 +106,7 @@ func (c *CacheGifs) LoadAllGifs(dirPath, commandName string) error {
 
 	return nil
 }
+
 func (c *CacheGifs) uploadGifToTelegram(filePath string) (string, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -107,16 +118,26 @@ func (c *CacheGifs) uploadGifToTelegram(filePath string) (string, error) {
 		Name:   filepath.Base(filePath),
 		Reader: file,
 	}
+
 	myid, _ := strconv.Atoi(myID)
 	msg := tgbotapi.NewDocument(int64(myid), fileReader)
 
-	resp, err := c.bot.Send(msg)
-	if err != nil {
+	maxRetries := 5
+	for i := 0; i < maxRetries; i++ {
+		resp, err := c.bot.Send(msg)
+		if err == nil {
+			return resp.Document.FileID, nil
+		}
+		if strings.Contains(err.Error(), "429") {
+			waitTime := time.Duration(i+1) * 30 * time.Second
+			logrus.Warnf("Rate limit, waiting %v before retry %d/%d", waitTime, i+1, maxRetries)
+			time.Sleep(waitTime)
+			continue
+		}
 		return "", fmt.Errorf("ошибка отправки в Telegram: %w", err)
 	}
 
-	fileID := resp.Document.FileID
-	return fileID, nil
+	return "", fmt.Errorf("failed after %d retries", maxRetries)
 }
 
 func (c *CacheGifs) SaveCache() error {
